@@ -26,14 +26,3 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-
-  release:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Go Publishr
-      # You may pin to the exact commit or the version.
-      # uses: PackagrIO/action-publishr-go@5500e68ee3673e8e8f9b825b72c67198d97804f3
-      uses: PackagrIO/action-publishr-go@v1.0.1
-      with:
-        # Commit Author
-        author_name: Nathan Crum # default is packagrio-bot
