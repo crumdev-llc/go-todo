@@ -53,7 +53,9 @@ func (l *List) Add(task string) int {
 
 func (l *List) Complete(i int) error {
 	ls := *l
-	l.checkIfItemExists(i)
+	if err := l.checkIfItemExists(i); err != nil {
+		return err
+	}
 
 	ls[i-1].Done = true
 	ls[i-1].CompletedAt = time.Now()
@@ -63,7 +65,9 @@ func (l *List) Complete(i int) error {
 
 func (l *List) Delete(i int) error {
 	ls := *l
-	l.checkIfItemExists(i)
+	if err := l.checkIfItemExists(i); err != nil {
+		return err
+	}
 
 	*l = append(ls[:i-1], ls[i:]...)
 
@@ -79,7 +83,7 @@ func (l *List) Save(filename string) error {
 	return os.WriteFile(filename, js, 0644)
 }
 
-func (l *List) Get(filename string) error {
+func (l *List) GetFile(filename string) error {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		return err
@@ -90,4 +94,12 @@ func (l *List) Get(filename string) error {
 	}
 
 	return json.Unmarshal(file, l)
+}
+
+func (l *List) GetTask(task int) (string, error) {
+	ls := *l
+	if err := l.checkIfItemExists(task); err != nil {
+		return "", err
+	}
+	return ls[task-1].Task, nil
 }
