@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -75,9 +76,28 @@ func TestTodoCLI(t *testing.T) {
 	}
 
 	cmdPath := filepath.Join(dir, binName)
-	t.Run("AddNewTask", func(t *testing.T) {
+	t.Run("AddNewTaskFromArguments", func(t *testing.T) {
 		for i := range tasks {
-			cmd := exec.Command(cmdPath, "-task", tasks[i])
+			cmd := exec.Command(cmdPath, "-add", tasks[i])
+			if err := cmd.Run(); err != nil {
+				t.Fatal(err)
+			}
+		}
+	})
+
+	// Clear the previously added todos before adding them again from
+	// StdIn so that the list and complete task tests still pass
+	os.Remove(todoFileName)
+
+	t.Run("AddNewTaskFromStdin", func(t *testing.T) {
+		for i := range tasks {
+			cmd := exec.Command(cmdPath, "-add")
+			cmdStdIn, err := cmd.StdinPipe()
+			if err != nil {
+				t.Fatal(err)
+			}
+			io.WriteString(cmdStdIn, tasks[i])
+			cmdStdIn.Close()
 			if err := cmd.Run(); err != nil {
 				t.Fatal(err)
 			}
@@ -118,6 +138,30 @@ func TestTodoCLI(t *testing.T) {
 		}
 
 		expected := formatCompletedList(tasks[0:])
+
+		if expected != string(out) {
+			t.Errorf("Expected %q, got %q instead\n", expected, string(out))
+		}
+	})
+
+	t.Run("DeleteTask", func(t *testing.T) {
+		cmd := exec.Command(cmdPath, "-delete", "2")
+		_, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		cmd2 := exec.Command(cmdPath, "-list")
+		out, err2 := cmd2.CombinedOutput()
+		if err2 != nil {
+			t.Fatal(err2)
+		}
+
+		remainingTasks := make([]string, 2)
+		remainingTasks[0] = tasks[0]
+		remainingTasks[1] = tasks[2]
+
+		expected := formatCompletedList(remainingTasks)
 
 		if expected != string(out) {
 			t.Errorf("Expected %q, got %q instead\n", expected, string(out))
