@@ -4,9 +4,8 @@
 name: Go
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
+    types: [opened, reopened]
     branches: [ "main" ]
 
 jobs:
@@ -27,3 +26,23 @@ jobs:
     - name: Test
       run: go test -v ./...
 
+  merge:
+    if: github.actor == 'crumdev' || github.actor == 'wstr-ncrum
+    needs: [buildAndTest]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto Approve
+        # You may pin to the exact commit or the version.
+        # uses: hmarr/auto-approve-action@44888193675f29a83e04faf4002fa8c0b537b1e4
+        uses: hmarr/auto-approve-action@v3.2.1
+        with:
+          # The GITHUB_TOKEN secret
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          review-message: "Automatically approved with passing tests and pr from ${{ github.actor }}"
+
+      - name: Merge PR and Delete Branch
+        # You may pin to the exact commit or the version.
+        # uses: managedkaos/merge-pull-request@f40db92f47023b5e07ec966f275e1cfd937f958d
+        uses: managedkaos/merge-pull-request@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
