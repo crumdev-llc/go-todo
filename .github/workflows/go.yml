@@ -37,7 +37,7 @@ jobs:
         uses: hmarr/auto-approve-action@v3.2.1
         with:
           # The GITHUB_TOKEN secret
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.my_token }}
           review-message: "Automatically approved with passing tests and pr from ${{ github.actor }}"
 
       - name: Merge PR and Delete Branch
@@ -45,4 +45,4 @@ jobs:
         # uses: managedkaos/merge-pull-request@f40db92f47023b5e07ec966f275e1cfd937f958d
         uses: managedkaos/merge-pull-request@v2.2.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.my_token }}
