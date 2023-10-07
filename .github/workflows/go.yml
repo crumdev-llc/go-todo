@@ -4,6 +4,7 @@
 name: Go
 
 on:
+  push:
   pull_request:
     types: [opened, reopened]
 
@@ -26,7 +27,7 @@ jobs:
       run: go test -v ./...
 
   merge:
-    if: github.actor == 'crumdev' || github.actor == 'wstr-ncrum'
+    if: (${{ GITHUB_EVENT_NAME }} == 'pull_request') && (github.actor == 'crumdev' || github.actor == 'wstr-ncrum')
     needs: [buildAndTest]
     runs-on: ubuntu-latest
     steps:
