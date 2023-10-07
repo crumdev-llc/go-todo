@@ -27,7 +27,7 @@ jobs:
       run: go test -v ./...
 
   merge:
-    if: (${{ GITHUB_EVENT_NAME }} == 'pull_request') && (github.actor == 'crumdev' || github.actor == 'wstr-ncrum')
+    if: (${{ env.GITHUB_EVENT_NAME }} == 'pull_request') && (github.actor == 'crumdev' || github.actor == 'wstr-ncrum')
     needs: [buildAndTest]
     runs-on: ubuntu-latest
     steps:
