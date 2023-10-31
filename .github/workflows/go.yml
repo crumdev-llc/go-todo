@@ -32,8 +32,6 @@ jobs:
     if: (github.event_name == 'pull_request') && (github.actor == 'crumdev' || github.actor == 'wstr-ncrum')
     needs: [buildAndTest]
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
       - uses: actions/checkout@v3.3.0
       - name: Auto Approve
